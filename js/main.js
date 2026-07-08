@@ -115,55 +115,6 @@ const statIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.6 });
 document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
-/* ─────────────── EMBER PARTICLES ─────────────── */
-(function embers() {
-  if (REDUCED) return;
-  const canvas = document.getElementById("embers");
-  const ctx = canvas.getContext("2d");
-  let W, H, parts = [];
-  const N = 55;
-  const COLORS = ["#e8b45a", "#d84a3a", "#f0d9a8", "#c77b3f"];
-
-  function resize() {
-    W = canvas.width = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  }
-  resize();
-  addEventListener("resize", resize, { passive: true });
-
-  function spawn(init) {
-    return {
-      x: Math.random() * W,
-      y: init ? Math.random() * H : H + 10,
-      r: 0.6 + Math.random() * 2.2,
-      vy: 0.25 + Math.random() * 0.9,
-      vx: (Math.random() - 0.5) * 0.4,
-      wob: Math.random() * Math.PI * 2,
-      c: COLORS[(Math.random() * COLORS.length) | 0],
-      a: 0.15 + Math.random() * 0.55,
-    };
-  }
-  for (let i = 0; i < N; i++) parts.push(spawn(true));
-
-  (function frame() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < parts.length; i++) {
-      const p = parts[i];
-      p.y -= p.vy;
-      p.wob += 0.02;
-      p.x += p.vx + Math.sin(p.wob) * 0.3;
-      if (p.y < -12) parts[i] = spawn(false);
-      ctx.globalAlpha = p.a * (0.6 + 0.4 * Math.sin(p.wob * 2));
-      ctx.fillStyle = p.c;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(frame);
-  })();
-})();
-
 /* ─────────────── PIZZA WHEEL ─────────────── */
 (function wheel() {
   const NS = "http://www.w3.org/2000/svg";
@@ -228,7 +179,7 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     artichoke: (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x} ${y + 7} L${x - 7} ${y - 5} Q${x} ${y - 10} ${x + 7} ${y - 5} Z`, fill: "#7a9a5c" }))),
     truffle:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 4.5, fill: "#3a2e24" }))),
     question:  (g, p) => p.forEach(([x, y]) => {
-      const t = el("text", { x, y: y + 8, "text-anchor": "middle", "font-size": 26, fill: "#f3e9dc", "font-family": "Playfair Display, serif", "font-weight": 700 });
+      const t = el("text", { x, y: y + 8, "text-anchor": "middle", "font-size": 26, fill: "#f3e9dc", "font-family": "Fraunces, Georgia, serif", "font-weight": 700 });
       t.textContent = "?"; g.appendChild(t);
     }),
   };
@@ -260,7 +211,7 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
       const g = el("g", { class: "slice", tabindex: 0, role: "option", "aria-label": `${pz.name}: ${pz.desc}` });
 
       // crust ring segment then inner sauce/cheese
-      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#100b09", "stroke-width": 3.5 }));
+      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#f8f1e0", "stroke-width": 3.5 }));
       g.appendChild(el("path", { d: slicePath(a0 + 0.01, a1 - 0.01, R - CRUST), fill: BASES[pz.base] }));
 
       // toppings
