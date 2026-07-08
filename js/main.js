@@ -169,8 +169,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.getElementById("pizzaWheel");
   const CX = 320, CY = 320, R = 300, CRUST = 34;
-  const PER = 8, PAGES = Math.ceil(PIZZAS.length / PER);
-  let page = 0, activeIdx = -1, angleOffset = 0;
+  const N = PIZZAS.length; // one slice per pizza
+  let rotation = 0;
 
   const nameEl = document.getElementById("wheelName");
   const roundEl = document.getElementById("wheelRound");
@@ -190,12 +190,12 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     return n;
   }
 
-  // points inside a wedge: radius fraction 0.35–0.85, angle inside wedge with margin
+  // thin wedges: spread toppings radially along the bisector with slight angular jitter
   function scatter(a0, a1, rand, count) {
-    const pts = [];
+    const pts = [], mid = (a0 + a1) / 2;
     for (let i = 0; i < count; i++) {
-      const t = a0 + 0.14 + rand() * (a1 - a0 - 0.28);
-      const rr = (0.4 + rand() * 0.42) * (R - CRUST);
+      const t = mid + (rand() - 0.5) * (a1 - a0) * 0.45;
+      const rr = (0.42 + ((i + rand()) / count) * 0.4) * (R - CRUST);
       pts.push([CX + rr * Math.cos(t), CY + rr * Math.sin(t)]);
     }
     return pts;
@@ -253,35 +253,31 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
   function render() {
     const group = el("g", { class: "slice-group" });
-    const slice0 = page * PER;
-    const items = PIZZAS.slice(slice0, slice0 + PER);
-    const step = (Math.PI * 2) / items.length;
+    const step = (Math.PI * 2) / N;
 
-    items.forEach((pz, i) => {
-      const a0 = angleOffset + i * step - Math.PI / 2;
+    PIZZAS.forEach((pz, i) => {
+      const a0 = i * step - Math.PI / 2;
       const a1 = a0 + step;
       const mid = (a0 + a1) / 2;
-      const rand = rng(slice0 + i + 7);
 
       const g = el("g", { class: "slice", tabindex: 0, role: "option", "aria-label": `${pz.name}: ${pz.desc}` });
 
       // crust ring segment then inner sauce/cheese
-      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#100b09", "stroke-width": 5 }));
-      g.appendChild(el("path", { d: slicePath(a0 + 0.012, a1 - 0.012, R - CRUST), fill: BASES[pz.base] }));
+      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#100b09", "stroke-width": 2.5 }));
+      g.appendChild(el("path", { d: slicePath(a0 + 0.008, a1 - 0.008, R - CRUST), fill: BASES[pz.base] }));
 
       // toppings
       pz.tops.forEach((key, k) => {
-        const count = pz.tops[0] === "question" ? 1 : 3;
         const painter = TOPPINGS[key];
         if (!painter) return;
         const pts = pz.tops[0] === "question"
           ? [polar(mid, (R - CRUST) * 0.62)]
-          : scatter(a0, a1, rng(slice0 + i * 13 + k * 31 + 3), count);
+          : scatter(a0, a1, rng(i * 13 + k * 31 + 3), 2);
         painter(g, pts);
       });
 
       // hover lift along bisector
-      const lift = 14;
+      const lift = 12;
       const dx = Math.cos(mid) * lift, dy = Math.sin(mid) * lift;
       g.addEventListener("mouseenter", () => select(g, pz, dx, dy));
       g.addEventListener("focus", () => select(g, pz, dx, dy));
@@ -292,26 +288,10 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
       group.appendChild(g);
     });
 
-    // swap with spin
-    const old = svg.querySelector(".slice-group");
-    if (old && !REDUCED) {
-      old.style.transform = "rotate(-40deg) scale(.85)";
-      old.style.opacity = "0";
-      setTimeout(() => old.remove(), 550);
-      group.style.transform = "rotate(40deg) scale(.85)";
-      group.style.opacity = "0";
-      svg.appendChild(group);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        group.style.transform = "rotate(0deg) scale(1)";
-        group.style.opacity = "1";
-      }));
-    } else {
-      if (old) old.remove();
-      svg.appendChild(group);
-    }
-
-    roundEl.textContent = `Round ${page + 1} / ${PAGES}`;
+    svg.appendChild(group);
+    roundEl.textContent = `${N - 1} pizze + la tua`;
     nameEl.textContent = "Choose a slice";
+    return group;
   }
 
   function select(g, pz, dx, dy) {
@@ -328,10 +308,15 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     g.style.transform = "";
   }
 
-  document.getElementById("wheelNext").addEventListener("click", () => { page = (page + 1) % PAGES; render(); });
-  document.getElementById("wheelPrev").addEventListener("click", () => { page = (page - 1 + PAGES) % PAGES; render(); });
+  const group = render();
 
-  render();
+  // arrows spin the whole wheel so every slice can face you
+  function spin(dir) {
+    rotation += dir * (360 / N) * 5;
+    if (!REDUCED) group.style.transform = `rotate(${rotation}deg)`;
+  }
+  document.getElementById("wheelNext").addEventListener("click", () => spin(1));
+  document.getElementById("wheelPrev").addEventListener("click", () => spin(-1));
 })();
 
 /* ─────────────── MENU TABS ─────────────── */
