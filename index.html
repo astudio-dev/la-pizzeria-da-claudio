@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Pizzeria da Claudio — Authentic Italian Pizza · Koh Tao</title>
+<meta name="description" content="Wood-fired Neapolitan pizza, homemade pasta and Italian wines on Sairee Beach, Koh Tao. Open daily 11:00–23:00. Eat in, take away or delivery.">
+<meta property="og:title" content="La Pizzeria da Claudio — Koh Tao">
+<meta property="og:description" content="Authentic Italian pizza on a tropical island. 31 traditional pizzas, homemade pasta, Italian wines.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23E8C87A'/><circle cx='50' cy='50' r='36' fill='%23C43A2F'/><circle cx='38' cy='42' r='6' fill='%23F5E9D6'/><circle cx='60' cy='38' r='6' fill='%23F5E9D6'/><circle cx='52' cy='58' r='6' fill='%23F5E9D6'/><circle cx='36' cy='60' r='4' fill='%233E7C4F'/><circle cx='65' cy='55' r='4' fill='%233E7C4F'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ═══════════ LOADER ═══════════ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-flame">
+    <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2c1 4-4 5.5-4 10a4 4 0 0 0 8 0c0-1.5-.5-2.5-1-3.5-1.5 1-2 2-2 3.5 0-4 3-5 -1-10z"/>
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 17c1.38 0 2.5-1.12 2.5-2.5 0-.61-.22-1.16-.58-1.59"/>
+    </svg>
+  </div>
+  <p class="loader-text">La Pizzeria da Claudio</p>
+</div>
+
+<!-- ═══════════ NAV ═══════════ -->
+<header class="nav" id="nav">
+  <a href="#home" class="nav-logo">
+    <span class="nav-logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 100 100" width="34" height="34"><circle cx="50" cy="50" r="46" fill="#E8C87A"/><circle cx="50" cy="50" r="36" fill="#C43A2F"/><circle cx="38" cy="42" r="6" fill="#F5E9D6"/><circle cx="60" cy="38" r="6" fill="#F5E9D6"/><circle cx="52" cy="58" r="6" fill="#F5E9D6"/><circle cx="36" cy="60" r="4" fill="#3E7C4F"/><circle cx="65" cy="55" r="4" fill="#3E7C4F"/></svg>
+    </span>
+    <span class="nav-logo-text">da <em>Claudio</em></span>
+  </a>
+  <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+    <a href="#story">Our Story</a>
+    <a href="#pizza">The Pizza Wheel</a>
+    <a href="#menu">Menu</a>
+    <a href="#wine">Wine Cellar</a>
+    <a href="#visit">Find Us</a>
+    <a href="tel:+66902791300" class="nav-cta">Order Now</a>
+  </nav>
+  <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="home">
+  <canvas class="hero-embers" id="embers" aria-hidden="true"></canvas>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="hero-kicker reveal-up" style="--d:0">Sairee Beach · Koh Tao · Thailand</p>
+    <h1 class="hero-title">
+      <span class="hero-line"><span class="reveal-up" style="--d:1">La&nbsp;Pizzeria</span></span>
+      <span class="hero-line"><span class="reveal-up hero-title-em" style="--d:2">da&nbsp;Claudio</span></span>
+    </h1>
+    <p class="hero-sub reveal-up" style="--d:3">Neapolitan pizza, fired the old way — on an island in the Gulf of Thailand.<br>Everything homemade, from the dough to the mortadella.</p>
+    <div class="hero-ctas reveal-up" style="--d:4">
+      <a href="#pizza" class="btn btn-primary">Spin the Pizza Wheel</a>
+      <a href="#visit" class="btn btn-ghost">Open daily 11:00 – 23:00</a>
+    </div>
+  </div>
+  <a href="#story" class="hero-scroll" aria-label="Scroll down">
+    <span class="hero-scroll-dot"></span>
+  </a>
+</section>
+
+<!-- ═══════════ MARQUEE ═══════════ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Wood-fired · Pizza Napoletana · Homemade Pasta · Fresh Burrata · Italian Wines · Cannoli Siciliani · Vegan Options ·&nbsp;</span>
+    <span>Wood-fired · Pizza Napoletana · Homemade Pasta · Fresh Burrata · Italian Wines · Cannoli Siciliani · Vegan Options ·&nbsp;</span>
+  </div>
+</div>
+
+<!-- ═══════════ STORY ═══════════ -->
+<section class="story section" id="story">
+  <div class="story-grid">
+    <div class="story-visual reveal" aria-hidden="true">
+      <div class="story-oven">
+        <svg viewBox="0 0 200 200" class="story-oven-svg">
+          <path d="M20 180 L20 100 A80 80 0 0 1 180 100 L180 180 Z" fill="var(--brick)" />
+          <path d="M45 180 L45 115 A55 55 0 0 1 155 115 L155 180 Z" fill="#1a0f0a" />
+          <ellipse cx="100" cy="168" rx="42" ry="10" fill="#2b1409"/>
+          <g class="oven-fire">
+            <path d="M85 168 Q83 148 95 140 Q92 155 100 158 Q104 145 112 142 Q108 156 115 168 Z" fill="var(--gold)"/>
+            <path d="M92 168 Q92 154 100 149 Q100 160 108 168 Z" fill="var(--red)"/>
+          </g>
+        </svg>
+        <div class="story-heat" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="story-text">
+      <p class="section-kicker reveal">Est. on the island — made in Italy</p>
+      <h2 class="section-title reveal">From Claudio's oven,<br><em>with amore</em></h2>
+      <p class="reveal">Italian owned and operated, La Pizzeria brings genuine traditional cooking to Koh Tao. Our dough rises slowly, our sauce is crushed from real Italian tomatoes, and our cold cuts — pancetta, coppa, mortadella — are cured in-house from scratch.</p>
+      <p class="reveal">Thirty-one pizzas. Handmade lasagne, gnocchi and ravioli. Cannoli filled to order with homemade ricotta. And a wine list that flew 9,000&nbsp;km to be here.</p>
+      <ul class="story-stats reveal">
+        <li><strong class="stat-num" data-count="31">0</strong><span>traditional pizzas</span></li>
+        <li><strong class="stat-num" data-count="40">0</strong><span>+ fresh toppings</span></li>
+        <li><strong class="stat-num" data-count="17">0</strong><span>Italian wines</span></li>
+        <li><strong class="stat-num" data-count="100">0</strong><span>% homemade</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PIZZA WHEEL ═══════════ -->
+<section class="wheel-section section" id="pizza">
+  <p class="section-kicker reveal">The interactive menu</p>
+  <h2 class="section-title reveal">The Pizza <em>Wheel</em></h2>
+  <p class="section-sub reveal">Every slice is a different pizza. Hover or tap a slice to taste it with your eyes — then spin for the next round.</p>
+
+  <div class="wheel-stage reveal">
+    <button class="wheel-arrow wheel-arrow-prev" id="wheelPrev" aria-label="Previous pizzas">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+
+    <div class="wheel-wrap">
+      <svg id="pizzaWheel" viewBox="0 0 640 640" role="listbox" aria-label="Pizza selection wheel"></svg>
+      <div class="wheel-center" id="wheelCenter" aria-live="polite">
+        <span class="wheel-center-round" id="wheelRound">Round 1 / 4</span>
+        <strong class="wheel-center-name" id="wheelName">Choose a slice</strong>
+      </div>
+    </div>
+
+    <button class="wheel-arrow wheel-arrow-next" id="wheelNext" aria-label="Next pizzas">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <div class="wheel-card" id="wheelCard" aria-live="polite">
+    <div class="wheel-card-inner">
+      <h3 id="cardName">Benvenuto!</h3>
+      <p id="cardDesc">Hover a slice of the wheel — each one is a real pizza from our oven. Use the arrows to spin through all 31, plus one just for you.</p>
+      <p class="wheel-card-tags" id="cardTags"></p>
+    </div>
+  </div>
+
+  <p class="wheel-hint reveal">All pizzas are also available with vegan mozzarella · Gluten-free base on request</p>
+</section>
+
+<!-- ═══════════ MENU ═══════════ -->
+<section class="menu-section section" id="menu">
+  <p class="section-kicker reveal">Beyond the pizza</p>
+  <h2 class="section-title reveal">La <em>Cucina</em></h2>
+
+  <div class="menu-tabs reveal" role="tablist" aria-label="Menu categories">
+    <button class="menu-tab is-active" role="tab" aria-selected="true" data-cat="starters">Antipasti</button>
+    <button class="menu-tab" role="tab" aria-selected="false" data-cat="salads">Insalate</button>
+    <button class="menu-tab" role="tab" aria-selected="false" data-cat="mains">Primi &amp; Mains</button>
+    <button class="menu-tab" role="tab" aria-selected="false" data-cat="desserts">Dolci</button>
+  </div>
+
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<!-- ═══════════ WINE ═══════════ -->
+<section class="wine-section section" id="wine">
+  <div class="wine-inner">
+    <p class="section-kicker reveal">In vino veritas</p>
+    <h2 class="section-title reveal">The Wine <em>Cellar</em></h2>
+    <p class="section-sub reveal">Seventeen Italian labels, from Tuscan hills to Sicilian sun — reds, whites and bubbles.</p>
+    <div class="wine-cols">
+      <div class="wine-col reveal">
+        <h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 22h8M12 15v7M7 2h10l-1 7a4 4 0 0 1-8 0z"/><path d="M7.5 6h9" opacity=".5"/></svg> Rossi</h3>
+        <ul>
+          <li>Chianti <span>Toscana</span></li>
+          <li>Barolo <span>Piemonte</span></li>
+          <li>Montepulciano d'Abruzzo <span>Abruzzo</span></li>
+          <li>Primitivo <span>Puglia</span></li>
+          <li>Nero d'Avola <span>Sicilia</span></li>
+          <li>Valpolicella <span>Veneto</span></li>
+        </ul>
+      </div>
+      <div class="wine-col reveal">
+        <h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 22h8M12 15v7M7 2h10l-1 7a4 4 0 0 1-8 0z"/></svg> Bianchi</h3>
+        <ul>
+          <li>Pinot Grigio <span>Friuli</span></li>
+          <li>Chardonnay <span>Trentino</span></li>
+          <li>Vermentino <span>Sardegna</span></li>
+          <li>Falanghina <span>Campania</span></li>
+          <li>Soave <span>Veneto</span></li>
+          <li>Gavi <span>Piemonte</span></li>
+        </ul>
+      </div>
+      <div class="wine-col reveal">
+        <h3><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 22h6M12 16v6M9.5 2h5L16 9a4 4 0 0 1-8 0z"/><circle cx="12" cy="6" r=".5"/><circle cx="10.5" cy="4" r=".5"/><circle cx="13.5" cy="4.5" r=".5"/></svg> Bollicine &amp; more</h3>
+        <ul>
+          <li>Prosecco <span>Veneto</span></li>
+          <li>Prosecco Rosé <span>Veneto</span></li>
+          <li>Lambrusco <span>Emilia</span></li>
+          <li>Moscato d'Asti <span>Piemonte</span></li>
+          <li>Limoncello <span>Costiera</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ VISIT ═══════════ -->
+<section class="visit section" id="visit">
+  <div class="visit-grid">
+    <div class="visit-info">
+      <p class="section-kicker reveal">Ci vediamo lì</p>
+      <h2 class="section-title reveal">Find us on <em>Sairee</em></h2>
+      <ul class="visit-list">
+        <li class="reveal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div><strong>Sairee Main Road</strong><span>Next to the gas station · Koh Tao, Surat Thani</span></div>
+        </li>
+        <li class="reveal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <div><strong>Open every day</strong><span>11:00 — 23:00 · kitchen never sleeps early</span></div>
+        </li>
+        <li class="reveal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div><strong><a href="tel:+66902791300">+66 90 279 1300</a></strong><span>Call for booking, take away or delivery</span></div>
+        </li>
+        <li class="reveal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+          <div><strong><a href="mailto:lapizzeriakohtao@gmail.com">lapizzeriakohtao@gmail.com</a></strong><span>Write to us anytime</span></div>
+        </li>
+      </ul>
+      <div class="visit-ctas reveal">
+        <a class="btn btn-primary" href="https://www.google.com/maps/search/La+Pizzeria+da+Claudio+Koh+Tao" target="_blank" rel="noopener">Open in Maps</a>
+        <a class="btn btn-ghost" href="https://m.me/423051921214665" target="_blank" rel="noopener">Message us</a>
+      </div>
+    </div>
+    <div class="visit-visual reveal" aria-hidden="true">
+      <div class="visit-island">
+        <svg viewBox="0 0 300 300">
+          <circle cx="150" cy="150" r="130" fill="none" stroke="var(--gold-dim)" stroke-width="1" stroke-dasharray="4 8" class="island-orbit"/>
+          <path d="M110 200 Q95 150 125 120 Q140 90 170 100 Q205 105 200 145 Q215 175 185 195 Q155 215 110 200Z" fill="var(--surface-2)" stroke="var(--gold-dim)" stroke-width="1.5"/>
+          <circle cx="138" cy="128" r="7" fill="var(--red)" class="island-pin"/>
+          <circle cx="138" cy="128" r="14" fill="none" stroke="var(--red)" stroke-width="1.5" class="island-ping"/>
+          <text x="150" y="250" text-anchor="middle" fill="var(--muted)" font-size="13" letter-spacing="3" font-family="Karla, sans-serif">KOH TAO</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-logo">La Pizzeria <em>da Claudio</em></p>
+    <p class="footer-tag">Autentica cucina italiana · Koh Tao</p>
+    <div class="footer-links">
+      <a href="https://www.facebook.com/lapizzeriakohtao/" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.09 24 18.1 24 12.07z"/></svg>
+      </a>
+      <a href="tel:+66902791300" aria-label="Phone">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </a>
+      <a href="mailto:lapizzeriakohtao@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+      </a>
+    </div>
+    <p class="footer-note">© <span id="year"></span> La Pizzeria da Claudio · Made with basilico &amp; fuoco</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
