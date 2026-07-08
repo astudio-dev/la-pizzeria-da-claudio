@@ -167,13 +167,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 /* ─────────────── PIZZA WHEEL ─────────────── */
 (function wheel() {
   const NS = "http://www.w3.org/2000/svg";
-  const svg = document.getElementById("pizzaWheel");
   const CX = 320, CY = 320, R = 300, CRUST = 34;
-  const N = PIZZAS.length; // one slice per pizza
-  let rotation = 0;
 
-  const nameEl = document.getElementById("wheelName");
-  const roundEl = document.getElementById("wheelRound");
   const card = document.getElementById("wheelCard");
   const cardName = document.getElementById("cardName");
   const cardDesc = document.getElementById("cardDesc");
@@ -251,11 +246,13 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     cardTags.textContent = pz.tags;
   }
 
-  function render() {
+  function buildWheel(svgId, nameId, items, seed) {
+    const svg = document.getElementById(svgId);
+    const nameEl = document.getElementById(nameId);
     const group = el("g", { class: "slice-group" });
-    const step = (Math.PI * 2) / N;
+    const step = (Math.PI * 2) / items.length;
 
-    PIZZAS.forEach((pz, i) => {
+    items.forEach((pz, i) => {
       const a0 = i * step - Math.PI / 2;
       const a1 = a0 + step;
       const mid = (a0 + a1) / 2;
@@ -263,8 +260,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
       const g = el("g", { class: "slice", tabindex: 0, role: "option", "aria-label": `${pz.name}: ${pz.desc}` });
 
       // crust ring segment then inner sauce/cheese
-      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#100b09", "stroke-width": 2.5 }));
-      g.appendChild(el("path", { d: slicePath(a0 + 0.008, a1 - 0.008, R - CRUST), fill: BASES[pz.base] }));
+      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#100b09", "stroke-width": 3.5 }));
+      g.appendChild(el("path", { d: slicePath(a0 + 0.01, a1 - 0.01, R - CRUST), fill: BASES[pz.base] }));
 
       // toppings
       pz.tops.forEach((key, k) => {
@@ -272,30 +269,28 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
         if (!painter) return;
         const pts = pz.tops[0] === "question"
           ? [polar(mid, (R - CRUST) * 0.62)]
-          : scatter(a0, a1, rng(i * 13 + k * 31 + 3), 2);
+          : scatter(a0, a1, rng((seed + i) * 13 + k * 31 + 3), 2);
         painter(g, pts);
       });
 
       // hover lift along bisector
-      const lift = 12;
+      const lift = 13;
       const dx = Math.cos(mid) * lift, dy = Math.sin(mid) * lift;
-      g.addEventListener("mouseenter", () => select(g, pz, dx, dy));
-      g.addEventListener("focus", () => select(g, pz, dx, dy));
+      g.addEventListener("mouseenter", () => select(g, pz, dx, dy, nameEl));
+      g.addEventListener("focus", () => select(g, pz, dx, dy, nameEl));
       g.addEventListener("mouseleave", () => deselect(g));
       g.addEventListener("blur", () => deselect(g));
-      g.addEventListener("click", () => select(g, pz, dx, dy));
+      g.addEventListener("click", () => select(g, pz, dx, dy, nameEl));
 
       group.appendChild(g);
     });
 
     svg.appendChild(group);
-    roundEl.textContent = `${N - 1} pizze + la tua`;
-    nameEl.textContent = "Choose a slice";
-    return group;
   }
 
-  function select(g, pz, dx, dy) {
-    svg.querySelectorAll(".slice").forEach((s) => { s.classList.remove("is-active"); s.style.transform = ""; });
+  function select(g, pz, dx, dy, nameEl) {
+    document.querySelectorAll(".slice").forEach((s) => { s.classList.remove("is-active"); s.style.transform = ""; });
+    document.querySelectorAll(".wheel-center-name").forEach((n) => { n.textContent = "Choose a slice"; });
     g.classList.add("is-active");
     if (!REDUCED) g.style.transform = `translate(${dx}px, ${dy}px)`;
     nameEl.textContent = pz.name;
@@ -308,15 +303,9 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     g.style.transform = "";
   }
 
-  const group = render();
-
-  // arrows spin the whole wheel so every slice can face you
-  function spin(dir) {
-    rotation += dir * (360 / N) * 5;
-    if (!REDUCED) group.style.transform = `rotate(${rotation}deg)`;
-  }
-  document.getElementById("wheelNext").addEventListener("click", () => spin(1));
-  document.getElementById("wheelPrev").addEventListener("click", () => spin(-1));
+  const HALF = Math.ceil(PIZZAS.length / 2);
+  buildWheel("pizzaWheel1", "wheelName1", PIZZAS.slice(0, HALF), 0);
+  buildWheel("pizzaWheel2", "wheelName2", PIZZAS.slice(HALF), HALF);
 })();
 
 /* ─────────────── MENU TABS ─────────────── */

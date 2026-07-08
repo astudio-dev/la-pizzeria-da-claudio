@@ -225,21 +225,20 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 /* ══════════════════ PIZZA WHEEL ══════════════════ */
 .wheel-stage {
-  display: flex; align-items: center; justify-content: center;
-  gap: clamp(10px, 3vw, 36px); margin-top: 40px;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: clamp(24px, 4vw, 60px); margin-top: 40px;
 }
-.wheel-wrap { position: relative; width: min(560px, 82vw); }
-#pizzaWheel { width: 100%; height: auto; overflow: visible; }
-#pizzaWheel .slice-group { transition: transform .6s var(--ease-out), opacity .5s; transform-origin: 320px 320px; }
-#pizzaWheel .slice {
+.wheel-wrap { position: relative; width: min(460px, 86vw); }
+.wheel-wrap svg { width: 100%; height: auto; overflow: visible; }
+.wheel-wrap .slice {
   cursor: pointer;
   transition: transform .35s var(--ease-out), filter .35s;
   outline: none;
 }
-#pizzaWheel .slice:hover, #pizzaWheel .slice:focus-visible, #pizzaWheel .slice.is-active {
+.wheel-wrap .slice:hover, .wheel-wrap .slice:focus-visible, .wheel-wrap .slice.is-active {
   filter: brightness(1.18) drop-shadow(0 6px 18px rgba(232, 180, 90, .4));
 }
-#pizzaWheel .slice:focus-visible .slice-base { stroke: var(--gold); stroke-width: 3; }
+.wheel-wrap .slice:focus-visible .slice-base { stroke: var(--gold); stroke-width: 5; }
 .wheel-center {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: 34%; aspect-ratio: 1; border-radius: 50%;
@@ -254,14 +253,6 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   font-family: var(--font-display); font-size: clamp(.95rem, 2.4vw, 1.35rem);
   line-height: 1.15; color: var(--text);
 }
-.wheel-arrow {
-  width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
-  border: 1.5px solid var(--gold-dim); color: var(--gold);
-  display: grid; place-items: center;
-  transition: background .25s, transform .25s var(--ease-out), border-color .25s;
-}
-.wheel-arrow:hover { background: rgba(232, 180, 90, .1); border-color: var(--gold); transform: scale(1.08); }
-.wheel-arrow:active { transform: scale(.94); }
 .wheel-card {
   max-width: 620px; margin: 36px auto 0; min-height: 150px;
   background: linear-gradient(160deg, var(--surface-2), var(--surface));
@@ -381,9 +372,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   }
   .nav-links a { padding: 12px; font-size: 1.05rem; }
   .nav-links.is-open { transform: none; }
-  .wheel-stage { flex-wrap: wrap; }
-  .wheel-arrow { order: 2; }
-  .wheel-wrap { order: 1; width: min(440px, 92vw); flex-basis: 100%; }
+  .wheel-wrap { width: min(420px, 92vw); }
   .wheel-card { padding: 22px; }
 }
 

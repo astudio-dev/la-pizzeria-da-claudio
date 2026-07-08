@@ -112,30 +112,30 @@
 <section class="wheel-section section" id="pizza">
   <p class="section-kicker reveal">The interactive menu</p>
   <h2 class="section-title reveal">The Pizza <em>Wheel</em></h2>
-  <p class="section-sub reveal">Every pizza on the menu is a slice of this wheel — all 31, plus one just for you. Hover or tap a slice to taste it with your eyes, and give it a spin.</p>
+  <p class="section-sub reveal">Two pizzas, thirty-two slices — every pizza on the menu is one of them, plus a slice just for you. Hover or tap a slice to taste it with your eyes.</p>
 
   <div class="wheel-stage reveal">
-    <button class="wheel-arrow wheel-arrow-prev" id="wheelPrev" aria-label="Spin wheel left">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
-
     <div class="wheel-wrap">
-      <svg id="pizzaWheel" viewBox="0 0 640 640" role="listbox" aria-label="Pizza selection wheel"></svg>
-      <div class="wheel-center" id="wheelCenter" aria-live="polite">
-        <span class="wheel-center-round" id="wheelRound">31 pizze + la tua</span>
-        <strong class="wheel-center-name" id="wheelName">Choose a slice</strong>
+      <svg id="pizzaWheel1" viewBox="0 0 640 640" role="listbox" aria-label="Pizzas 1 to 16"></svg>
+      <div class="wheel-center" aria-live="polite">
+        <span class="wheel-center-round">Pizze 1 – 16</span>
+        <strong class="wheel-center-name" id="wheelName1">Choose a slice</strong>
       </div>
     </div>
 
-    <button class="wheel-arrow wheel-arrow-next" id="wheelNext" aria-label="Spin wheel right">
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
+    <div class="wheel-wrap">
+      <svg id="pizzaWheel2" viewBox="0 0 640 640" role="listbox" aria-label="Pizzas 17 to 32"></svg>
+      <div class="wheel-center" aria-live="polite">
+        <span class="wheel-center-round">Pizze 17 – 32</span>
+        <strong class="wheel-center-name" id="wheelName2">Choose a slice</strong>
+      </div>
+    </div>
   </div>
 
   <div class="wheel-card" id="wheelCard" aria-live="polite">
     <div class="wheel-card-inner">
       <h3 id="cardName">Benvenuto!</h3>
-      <p id="cardDesc">Hover a slice of the wheel — each one is a real pizza from our oven. All 31 are here, plus a slice to build your own. The arrows spin the wheel.</p>
+      <p id="cardDesc">Hover a slice — each one is a real pizza from our oven. All 31 are here, plus a slice to build your own.</p>
       <p class="wheel-card-tags" id="cardTags"></p>
     </div>
   </div>
