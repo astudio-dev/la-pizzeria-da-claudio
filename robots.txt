@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.lapizzeriakohtao.com/sitemap.xml
