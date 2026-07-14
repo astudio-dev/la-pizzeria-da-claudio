@@ -126,7 +126,6 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
   const cardTags = document.getElementById("cardTags");
   const diagramSvg = document.getElementById("cardDiagram");
 
-  const BASES = { red: "#b8442f", white: "#f0d9a8" };
   const BASE_NAMES = { red: "San Marzano Tomato", white: "Cream Base" };
   const TOPPING_NAMES = {
     mozz: "Mozzarella", burrata: "Burrata", basil: "Basil", rocket: "Rocket",
@@ -148,6 +147,49 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     return n;
   }
 
+  /* ── shared gradients + drop-shadow filters, for a baked/glossy 3D look ── */
+  const sharedDefs = (() => {
+    const svg = el("svg", { width: 0, height: 0, style: "position:absolute", "aria-hidden": "true" });
+    svg.appendChild(el("defs", {}));
+    document.body.appendChild(svg);
+    return svg.firstChild;
+  })();
+
+  function radialGrad(id, stops) {
+    const g = el("radialGradient", { id, cx: "35%", cy: "30%", r: "75%" });
+    stops.forEach(([offset, color]) => g.appendChild(el("stop", { offset, "stop-color": color })));
+    sharedDefs.appendChild(g);
+  }
+  radialGrad("crustGrad", [["0%", "#f0c98a"], ["55%", "#d9a35e"], ["100%", "#a8672e"]]);
+  radialGrad("sauceGrad", [["0%", "#d65f45"], ["55%", "#b8442f"], ["100%", "#7a2c1c"]]);
+  radialGrad("creamGrad", [["0%", "#f8ecd2"], ["55%", "#f0d9a8"], ["100%", "#d1b57c"]]);
+
+  function shadowFilter(id, dy, blur, opacity) {
+    const f = el("filter", { id, x: "-50%", y: "-50%", width: "200%", height: "200%" });
+    f.appendChild(el("feDropShadow", { dx: 0, dy, stdDeviation: blur, "flood-color": "#2b1c10", "flood-opacity": opacity }));
+    sharedDefs.appendChild(f);
+  }
+  shadowFilter("pizzaShadow", 5, 5, 0.3);
+  shadowFilter("toppingShadow", 1.1, 1, 0.35);
+
+  // lighten/darken a hex color for gradient stops
+  function shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    const clamp = (v) => Math.max(0, Math.min(255, v));
+    const r = clamp((n >> 16) + amt), g = clamp(((n >> 8) & 0xff) + amt), b = clamp((n & 0xff) + amt);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+  const glossCache = new Map();
+  function gloss(hex) {
+    if (glossCache.has(hex)) return glossCache.get(hex);
+    const id = `gloss-${glossCache.size}`;
+    radialGrad(id, [["0%", shade(hex, 60)], ["60%", hex], ["100%", shade(hex, -35)]]);
+    const url = `url(#${id})`;
+    glossCache.set(hex, url);
+    return url;
+  }
+  const SHADOW = "url(#toppingShadow)";
+
   // thin wedges: spread toppings radially along the bisector with slight angular jitter
   function scatter(a0, a1, rand, count) {
     const pts = [], mid = (a0 + a1) / 2;
@@ -160,38 +202,38 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
   }
 
   const TOPPINGS = {
-    mozz:      (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 11, fill: "#f5ecd7", opacity: .92 }))),
-    burrata:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 14, fill: "#fbf6ea" }))),
-    basil:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 9, ry: 5.5, fill: "#3E7C4F", transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
-    rocket:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 10, ry: 4, fill: "#4a7a42", transform: `rotate(${(x * y) % 360} ${x} ${y})` }))),
-    parsley:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 3.5, fill: "#4a7a42" }))),
+    mozz:      (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 11, fill: gloss("#f5ecd7"), opacity: .92, filter: SHADOW }))),
+    burrata:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 14, fill: gloss("#fbf6ea"), filter: SHADOW }))),
+    basil:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 9, ry: 5.5, fill: gloss("#3E7C4F"), filter: SHADOW, transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
+    rocket:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 10, ry: 4, fill: gloss("#4a7a42"), filter: SHADOW, transform: `rotate(${(x * y) % 360} ${x} ${y})` }))),
+    parsley:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 3.5, fill: gloss("#4a7a42") }))),
     oregano:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 2.5, fill: "#5c6e3c" }))),
-    salame:    (g, p) => p.forEach(([x, y]) => { g.appendChild(el("circle", { cx: x, cy: y, r: 10, fill: "#8e2f22" })); g.appendChild(el("circle", { cx: x, cy: y, r: 7, fill: "#a83b2b" })); }),
-    ham:       (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 9, y: y - 6, width: 18, height: 12, rx: 4, fill: "#d98a80", transform: `rotate(${(x + 2 * y) % 360} ${x} ${y})` }))),
-    crudo:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 12} ${y} q6 -9 12 0 t12 0`, stroke: "#c96a5c", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }))),
-    bacon:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 10} ${y} q5 -6 10 0 t10 0`, stroke: "#9c4a30", "stroke-width": 5, fill: "none", "stroke-linecap": "round" }))),
-    sausage:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 7, fill: "#7d4a35" }))),
-    chicken:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 8, y: y - 6, width: 16, height: 12, rx: 5, fill: "#e0c08e" }))),
-    mushroom:  (g, p) => p.forEach(([x, y]) => { g.appendChild(el("path", { d: `M${x - 8} ${y} a8 8 0 0 1 16 0 z`, fill: "#c9b39a" })); g.appendChild(el("rect", { x: x - 2.5, y: y, width: 5, height: 7, rx: 2, fill: "#b09a80" })); }),
-    olive:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 5, fill: "#2e2a24", stroke: "#4a4438", "stroke-width": 1.5 }))),
-    caper:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 3.5, fill: "#5a6b3a" }))),
-    anchovy:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 11} ${y} q11 -5 22 0 q-11 5 -22 0`, fill: "#8a8f96" }))),
-    shrimp:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y + 5} a9 9 0 1 1 14 -9`, stroke: "#e8846b", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }))),
-    mussel:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 8, ry: 5, fill: "#3a3f52", transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
-    pineapple: (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x} ${y - 8} L${x + 7} ${y + 5} L${x - 7} ${y + 5} Z`, fill: "#f2c14e" }))),
-    pepper:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y} q9 -7 18 0`, stroke: "#4a8a3c", "stroke-width": 5, fill: "none", "stroke-linecap": "round" }))),
-    onion:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y} q9 -8 18 0`, stroke: "#c9a0c4", "stroke-width": 4, fill: "none", "stroke-linecap": "round" }))),
-    chilli:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 7} ${y - 3} q9 -2 14 6`, stroke: "#d43b25", "stroke-width": 5, fill: "none", "stroke-linecap": "round" }))),
-    garlic:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 4, fill: "#efe6cf" }))),
-    gorgonzola:(g, p) => p.forEach(([x, y]) => { g.appendChild(el("circle", { cx: x, cy: y, r: 9, fill: "#e8e2cc" })); g.appendChild(el("circle", { cx: x + 3, cy: y - 2, r: 2, fill: "#7a8a6a" })); }),
-    cheese:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 7, y: y - 7, width: 14, height: 14, rx: 3, fill: "#f2d06b", transform: `rotate(${(3 * x + y) % 360} ${x} ${y})` }))),
-    feta:      (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 7, y: y - 7, width: 14, height: 14, rx: 2, fill: "#f7f3e8", transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
-    eggplant:  (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 9, ry: 6, fill: "#5a3a5e" }))),
-    zucchini:  (g, p) => p.forEach(([x, y]) => { g.appendChild(el("circle", { cx: x, cy: y, r: 7, fill: "#cfe0a8", stroke: "#6a8a3c", "stroke-width": 2.5 })); }),
-    artichoke: (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x} ${y + 7} L${x - 7} ${y - 5} Q${x} ${y - 10} ${x + 7} ${y - 5} Z`, fill: "#7a9a5c" }))),
-    truffle:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 4.5, fill: "#3a2e24" }))),
+    salame:    (g, p) => p.forEach(([x, y]) => { g.appendChild(el("circle", { cx: x, cy: y, r: 10, fill: gloss("#8e2f22"), filter: SHADOW })); g.appendChild(el("circle", { cx: x, cy: y, r: 6, fill: gloss("#a83b2b") })); }),
+    ham:       (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 9, y: y - 6, width: 18, height: 12, rx: 4, fill: gloss("#d98a80"), filter: SHADOW, transform: `rotate(${(x + 2 * y) % 360} ${x} ${y})` }))),
+    crudo:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 12} ${y} q6 -9 12 0 t12 0`, stroke: gloss("#c96a5c"), "stroke-width": 6, fill: "none", "stroke-linecap": "round", filter: SHADOW }))),
+    bacon:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 10} ${y} q5 -6 10 0 t10 0`, stroke: gloss("#9c4a30"), "stroke-width": 5, fill: "none", "stroke-linecap": "round", filter: SHADOW }))),
+    sausage:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 7, fill: gloss("#7d4a35"), filter: SHADOW }))),
+    chicken:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 8, y: y - 6, width: 16, height: 12, rx: 5, fill: gloss("#e0c08e"), filter: SHADOW }))),
+    mushroom:  (g, p) => p.forEach(([x, y]) => { g.appendChild(el("path", { d: `M${x - 8} ${y} a8 8 0 0 1 16 0 z`, fill: gloss("#c9b39a"), filter: SHADOW })); g.appendChild(el("rect", { x: x - 2.5, y: y, width: 5, height: 7, rx: 2, fill: "#b09a80" })); }),
+    olive:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 5, fill: gloss("#2e2a24"), stroke: "#4a4438", "stroke-width": 1.5, filter: SHADOW }))),
+    caper:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 3.5, fill: gloss("#5a6b3a") }))),
+    anchovy:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 11} ${y} q11 -5 22 0 q-11 5 -22 0`, fill: gloss("#8a8f96"), filter: SHADOW }))),
+    shrimp:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y + 5} a9 9 0 1 1 14 -9`, stroke: gloss("#e8846b"), "stroke-width": 6, fill: "none", "stroke-linecap": "round", filter: SHADOW }))),
+    mussel:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 8, ry: 5, fill: gloss("#3a3f52"), filter: SHADOW, transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
+    pineapple: (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x} ${y - 8} L${x + 7} ${y + 5} L${x - 7} ${y + 5} Z`, fill: gloss("#f2c14e"), filter: SHADOW }))),
+    pepper:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y} q9 -7 18 0`, stroke: gloss("#4a8a3c"), "stroke-width": 5, fill: "none", "stroke-linecap": "round", filter: SHADOW }))),
+    onion:     (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 9} ${y} q9 -8 18 0`, stroke: gloss("#c9a0c4"), "stroke-width": 4, fill: "none", "stroke-linecap": "round" }))),
+    chilli:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x - 7} ${y - 3} q9 -2 14 6`, stroke: gloss("#d43b25"), "stroke-width": 5, fill: "none", "stroke-linecap": "round", filter: SHADOW }))),
+    garlic:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 4, fill: gloss("#efe6cf") }))),
+    gorgonzola:(g, p) => p.forEach(([x, y]) => { g.appendChild(el("circle", { cx: x, cy: y, r: 9, fill: gloss("#e8e2cc"), filter: SHADOW })); g.appendChild(el("circle", { cx: x + 3, cy: y - 2, r: 2, fill: "#7a8a6a" })); }),
+    cheese:    (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 7, y: y - 7, width: 14, height: 14, rx: 3, fill: gloss("#f2d06b"), filter: SHADOW, transform: `rotate(${(3 * x + y) % 360} ${x} ${y})` }))),
+    feta:      (g, p) => p.forEach(([x, y]) => g.appendChild(el("rect", { x: x - 7, y: y - 7, width: 14, height: 14, rx: 2, fill: gloss("#f7f3e8"), filter: SHADOW, transform: `rotate(${(x + y) % 360} ${x} ${y})` }))),
+    eggplant:  (g, p) => p.forEach(([x, y]) => g.appendChild(el("ellipse", { cx: x, cy: y, rx: 9, ry: 6, fill: gloss("#5a3a5e"), filter: SHADOW }))),
+    zucchini:  (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 7, fill: gloss("#cfe0a8"), stroke: "#6a8a3c", "stroke-width": 2.5, filter: SHADOW }))),
+    artichoke: (g, p) => p.forEach(([x, y]) => g.appendChild(el("path", { d: `M${x} ${y + 7} L${x - 7} ${y - 5} Q${x} ${y - 10} ${x + 7} ${y - 5} Z`, fill: gloss("#7a9a5c"), filter: SHADOW }))),
+    truffle:   (g, p) => p.forEach(([x, y]) => g.appendChild(el("circle", { cx: x, cy: y, r: 4.5, fill: gloss("#3a2e24") }))),
     question:  (g, p) => p.forEach(([x, y]) => {
-      const t = el("text", { x, y: y + 8, "text-anchor": "middle", "font-size": 26, fill: "#f3e9dc", "font-family": "Fraunces, Georgia, serif", "font-weight": 700 });
+      const t = el("text", { x, y: y + 8, "text-anchor": "middle", "font-size": 26, fill: "#f3e9dc", "font-family": "Fraunces, Georgia, serif", "font-weight": 700, filter: SHADOW });
       t.textContent = "?"; g.appendChild(t);
     }),
   };
@@ -219,8 +261,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     const g = el("g", {});
     diagramSvg.appendChild(g);
 
-    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2, fill: "#d9a35e", stroke: "#f8f1e0", "stroke-width": 3.5 }));
-    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2 - CRUST2, fill: BASES[pz.base] }));
+    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2, fill: "url(#crustGrad)", stroke: "#f8f1e0", "stroke-width": 3.5, filter: "url(#pizzaShadow)" }));
+    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2 - CRUST2, fill: pz.base === "red" ? "url(#sauceGrad)" : "url(#creamGrad)" }));
 
     const labels = [{ key: "base", name: BASE_NAMES[pz.base] }, ...pz.tops.map((key) => ({ key, name: TOPPING_NAMES[key] || key }))];
     const n = labels.length;
@@ -266,8 +308,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
       const g = el("g", { class: "slice", tabindex: 0, role: "option", "aria-label": `${pz.name}: ${pz.desc}` });
 
       // crust ring segment then inner sauce/cheese
-      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "#d9a35e", stroke: "#f8f1e0", "stroke-width": 3.5 }));
-      g.appendChild(el("path", { d: slicePath(a0 + 0.01, a1 - 0.01, R - CRUST), fill: BASES[pz.base] }));
+      g.appendChild(el("path", { class: "slice-base", d: slicePath(a0, a1, R), fill: "url(#crustGrad)", stroke: "#f8f1e0", "stroke-width": 3.5, filter: "url(#pizzaShadow)" }));
+      g.appendChild(el("path", { d: slicePath(a0 + 0.01, a1 - 0.01, R - CRUST), fill: pz.base === "red" ? "url(#sauceGrad)" : "url(#creamGrad)" }));
 
       // toppings
       pz.tops.forEach((key, k) => {
