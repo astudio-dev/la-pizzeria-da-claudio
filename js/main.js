@@ -122,10 +122,22 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
   const card = document.getElementById("wheelCard");
   const cardName = document.getElementById("cardName");
-  const cardDesc = document.getElementById("cardDesc");
+  const cardHint = document.getElementById("cardHint");
   const cardTags = document.getElementById("cardTags");
+  const diagramSvg = document.getElementById("cardDiagram");
 
   const BASES = { red: "#b8442f", white: "#f0d9a8" };
+  const BASE_NAMES = { red: "San Marzano Tomato", white: "Cream Base" };
+  const TOPPING_NAMES = {
+    mozz: "Mozzarella", burrata: "Burrata", basil: "Basil", rocket: "Rocket",
+    parsley: "Parsley", oregano: "Oregano", salame: "Salame", ham: "Ham",
+    crudo: "Prosciutto Crudo", bacon: "Bacon", sausage: "Sausage", chicken: "Chicken",
+    mushroom: "Mushroom", olive: "Olives", caper: "Capers", anchovy: "Anchovies",
+    shrimp: "Prawns", mussel: "Mussels", pineapple: "Pineapple", pepper: "Peppers",
+    onion: "Onion", chilli: "Chilli", garlic: "Garlic", gorgonzola: "Gorgonzola",
+    cheese: "Cheese", feta: "Feta", eggplant: "Eggplant", zucchini: "Zucchini",
+    artichoke: "Artichoke", truffle: "Truffle Cream", question: "Your Choice",
+  };
 
   // deterministic pseudo-random so toppings don't jump between renders
   function rng(seed) { return () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
@@ -193,8 +205,51 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
   function setCard(pz) {
     cardName.textContent = pz.name;
-    cardDesc.textContent = pz.desc;
     cardTags.textContent = pz.tags;
+    cardHint.style.display = "none";
+    renderDiagram(pz);
+  }
+
+  // exploded diagram: pizza with a dashed pointer + name for every ingredient
+  function renderDiagram(pz) {
+    const CX2 = 320, CY2 = 240, R2 = 110, CRUST2 = 14, LR = R2 + 76;
+    const rand = rng(pz.name.split("").reduce((a, c) => a + c.charCodeAt(0), 7) * 97 + 11);
+
+    diagramSvg.innerHTML = `<defs><marker id="ing-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#362718"/></marker></defs>`;
+    const g = el("g", {});
+    diagramSvg.appendChild(g);
+
+    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2, fill: "#d9a35e", stroke: "#f8f1e0", "stroke-width": 3.5 }));
+    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2 - CRUST2, fill: BASES[pz.base] }));
+
+    const labels = [{ key: "base", name: BASE_NAMES[pz.base] }, ...pz.tops.map((key) => ({ key, name: TOPPING_NAMES[key] || key }))];
+    const n = labels.length;
+
+    labels.forEach((item, i) => {
+      const angle = -Math.PI / 2 + (i * Math.PI * 2) / n;
+      const anchorR = item.key === "base" ? R2 * 0.82 : R2 * 0.55;
+      const ax = CX2 + anchorR * Math.cos(angle), ay = CY2 + anchorR * Math.sin(angle);
+
+      if (item.key !== "base") {
+        const painter = TOPPINGS[item.key];
+        const extra = item.key === "question" ? [] : Array.from({ length: 2 }, () => {
+          const a2 = rand() * Math.PI * 2, r2 = Math.sqrt(rand()) * R2 * 0.78;
+          return [CX2 + r2 * Math.cos(a2), CY2 + r2 * Math.sin(a2)];
+        });
+        if (painter) painter(g, [[ax, ay], ...extra]);
+      }
+
+      const lx = CX2 + LR * Math.cos(angle), ly = CY2 + LR * Math.sin(angle);
+      g.appendChild(el("circle", { cx: ax, cy: ay, r: 15, fill: "none", stroke: "#362718", "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: .8 }));
+      g.appendChild(el("line", { x1: lx, y1: ly, x2: ax, y2: ay, stroke: "#362718", "stroke-width": 1.6, "stroke-dasharray": "2 4", "marker-end": "url(#ing-arrow)", opacity: .85 }));
+
+      const cosA = Math.cos(angle), sinA = Math.sin(angle);
+      const anchorSide = cosA > 0.12 ? "start" : cosA < -0.12 ? "end" : "middle";
+      const dy = sinA < -0.5 ? -6 : sinA > 0.5 ? 16 : 6;
+      const t = el("text", { x: lx, y: ly + dy, "text-anchor": anchorSide, "font-family": "var(--font-hand), cursive", "font-size": 24, fill: "#362718", "font-weight": 600 });
+      t.textContent = item.name;
+      g.appendChild(t);
+    });
   }
 
   function buildWheel(svgId, nameId, items, seed) {

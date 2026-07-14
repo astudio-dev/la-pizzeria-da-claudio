@@ -297,7 +297,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   font-weight: 700; line-height: 1.12; color: var(--ink);
 }
 .wheel-card {
-  max-width: 620px; margin: 40px auto 0; min-height: 150px;
+  max-width: 720px; margin: 40px auto 0; min-height: 150px;
   background: var(--card);
   border: 1.5px solid var(--ink);
   border-radius: var(--wobble);
@@ -310,6 +310,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .wheel-card h3 { font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; color: var(--tomato); margin-bottom: 8px; }
 .wheel-card p { color: var(--ink-soft); }
 .wheel-card-tags { margin-top: 10px; font-family: var(--font-hand); font-size: 1.2rem; color: var(--basil); }
+.card-diagram { display: block; width: 100%; max-width: 560px; height: auto; margin: 10px auto 0; overflow: visible; }
 .wheel-hint { margin-top: 26px; font-family: var(--font-hand); font-size: 1.25rem; color: var(--ink-soft); transform: rotate(-.8deg); }
 
 /* ══════════════════ MENU ══════════════════ */
