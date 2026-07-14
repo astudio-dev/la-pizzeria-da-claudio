@@ -262,10 +262,29 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     diagramSvg.appendChild(g);
 
     g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2, fill: "url(#crustGrad)", stroke: "#f8f1e0", "stroke-width": 3.5, filter: "url(#pizzaShadow)" }));
+
+    // wood-fired char spots on the crust rim
+    for (let i = 0; i < 14; i++) {
+      const a = rand() * Math.PI * 2;
+      const rr = R2 - CRUST2 * 0.55 + rand() * CRUST2 * 0.7;
+      const cx = CX2 + rr * Math.cos(a), cy = CY2 + rr * Math.sin(a);
+      g.appendChild(el("ellipse", { cx, cy, rx: 3 + rand() * 4, ry: 2 + rand() * 3, fill: "#6b3d1c", opacity: (.2 + rand() * .2).toFixed(2), transform: `rotate(${(rand() * 360).toFixed(1)} ${cx} ${cy})` }));
+    }
+
     g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2 - CRUST2, fill: pz.base === "red" ? "url(#sauceGrad)" : "url(#creamGrad)" }));
+
+    // melted-cheese / sauce mottling for texture
+    for (let i = 0; i < 10; i++) {
+      const a = rand() * Math.PI * 2, rr = Math.sqrt(rand()) * (R2 - CRUST2) * 0.9;
+      const cx = CX2 + rr * Math.cos(a), cy = CY2 + rr * Math.sin(a);
+      const shade = rand() > 0.5 ? "#fff" : "#000";
+      g.appendChild(el("ellipse", { cx, cy, rx: 10 + rand() * 14, ry: 7 + rand() * 10, fill: shade, opacity: (.05 + rand() * .05).toFixed(2), transform: `rotate(${(rand() * 360).toFixed(1)} ${cx} ${cy})` }));
+    }
 
     const labels = [{ key: "base", name: BASE_NAMES[pz.base] }, ...pz.tops.map((key) => ({ key, name: TOPPING_NAMES[key] || key }))];
     const n = labels.length;
+    // more toppings on the pizza → fewer repeats of each, but the pie always ends up fully loaded
+    const EXTRA = pz.tops[0] === "question" ? 0 : Math.max(5, Math.round(22 / Math.max(1, pz.tops.length)));
 
     labels.forEach((item, i) => {
       const angle = -Math.PI / 2 + (i * Math.PI * 2) / n;
@@ -274,8 +293,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
       if (item.key !== "base") {
         const painter = TOPPINGS[item.key];
-        const extra = item.key === "question" ? [] : Array.from({ length: 2 }, () => {
-          const a2 = rand() * Math.PI * 2, r2 = Math.sqrt(rand()) * R2 * 0.78;
+        const extra = item.key === "question" ? [] : Array.from({ length: EXTRA }, () => {
+          const a2 = rand() * Math.PI * 2, r2 = Math.sqrt(rand()) * (R2 - CRUST2) * 0.92;
           return [CX2 + r2 * Math.cos(a2), CY2 + r2 * Math.sin(a2)];
         });
         if (painter) painter(g, [[ax, ay], ...extra]);
