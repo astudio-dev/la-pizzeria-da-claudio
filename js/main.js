@@ -252,64 +252,100 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
     renderDiagram(pz);
   }
 
-  // exploded diagram: pizza with a dashed pointer + name for every ingredient
+  // realistic pizza slice with a dashed pointer + name for every ingredient
   function renderDiagram(pz) {
-    const CX2 = 320, CY2 = 240, R2 = 110, CRUST2 = 14, LR = R2 + 76;
+    const AX = 320, AY = 452, RS = 370, CR = 36;               // tip at bottom, crust arc on top
+    const A0 = -Math.PI / 2 - 0.52, A1 = -Math.PI / 2 + 0.52;  // ~60° wedge
     const rand = rng(pz.name.split("").reduce((a, c) => a + c.charCodeAt(0), 7) * 97 + 11);
+    const pt = (a, r) => [AX + r * Math.cos(a), AY + r * Math.sin(a)];
+    const wedge = (r) => {
+      const [x0, y0] = pt(A0, r), [x1, y1] = pt(A1, r);
+      return `M${AX} ${AY} L${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1} Z`;
+    };
 
     diagramSvg.innerHTML = `<defs><marker id="ing-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#362718"/></marker></defs>`;
     const g = el("g", {});
     diagramSvg.appendChild(g);
 
-    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2, fill: "url(#crustGrad)", stroke: "#f8f1e0", "stroke-width": 3.5, filter: "url(#pizzaShadow)" }));
+    // crust (only visible along the arc, like a real cut slice) + sauce/cream body
+    g.appendChild(el("path", { d: wedge(RS), fill: "url(#crustGrad)", stroke: "#f8f1e0", "stroke-width": 3.5, filter: "url(#pizzaShadow)" }));
+    g.appendChild(el("path", { d: wedge(RS - CR), fill: pz.base === "red" ? "url(#sauceGrad)" : "url(#creamGrad)" }));
 
-    // wood-fired char spots on the crust rim
-    for (let i = 0; i < 14; i++) {
-      const a = rand() * Math.PI * 2;
-      const rr = R2 - CRUST2 * 0.55 + rand() * CRUST2 * 0.7;
-      const cx = CX2 + rr * Math.cos(a), cy = CY2 + rr * Math.sin(a);
+    // melted cheese oozing over the two cut edges, plus a drip hanging off the tip
+    [A0, A1].forEach((a) => {
+      for (let i = 0; i < 4; i++) {
+        const r = (0.3 + i * 0.18 + rand() * 0.08) * (RS - CR);
+        const [cx, cy] = pt(a, r);
+        g.appendChild(el("ellipse", { cx, cy, rx: 9 + rand() * 8, ry: 5 + rand() * 3, fill: gloss("#f2dfae"), opacity: .95, transform: `rotate(${(a * 180 / Math.PI).toFixed(1)} ${cx} ${cy})` }));
+      }
+    });
+    g.appendChild(el("path", { d: `M${AX - 8} ${AY - 6} q9 24 6 33 q-3 9 -7 1 q-5 -11 -6 -28 z`, fill: gloss("#f2dfae"), filter: SHADOW }));
+
+    // wood-fired char spots on the crust
+    for (let i = 0; i < 9; i++) {
+      const a = A0 + rand() * (A1 - A0);
+      const rr = RS - CR * 0.5 + (rand() - 0.5) * CR * 0.6;
+      const [cx, cy] = pt(a, rr);
       g.appendChild(el("ellipse", { cx, cy, rx: 3 + rand() * 4, ry: 2 + rand() * 3, fill: "#6b3d1c", opacity: (.2 + rand() * .2).toFixed(2), transform: `rotate(${(rand() * 360).toFixed(1)} ${cx} ${cy})` }));
     }
 
-    g.appendChild(el("circle", { cx: CX2, cy: CY2, r: R2 - CRUST2, fill: pz.base === "red" ? "url(#sauceGrad)" : "url(#creamGrad)" }));
-
     // melted-cheese / sauce mottling for texture
-    for (let i = 0; i < 10; i++) {
-      const a = rand() * Math.PI * 2, rr = Math.sqrt(rand()) * (R2 - CRUST2) * 0.9;
-      const cx = CX2 + rr * Math.cos(a), cy = CY2 + rr * Math.sin(a);
-      const shade = rand() > 0.5 ? "#fff" : "#000";
-      g.appendChild(el("ellipse", { cx, cy, rx: 10 + rand() * 14, ry: 7 + rand() * 10, fill: shade, opacity: (.05 + rand() * .05).toFixed(2), transform: `rotate(${(rand() * 360).toFixed(1)} ${cx} ${cy})` }));
+    for (let i = 0; i < 8; i++) {
+      const a = A0 + 0.08 + rand() * (A1 - A0 - 0.16);
+      const rr = (0.3 + rand() * 0.6) * (RS - CR);
+      const [cx, cy] = pt(a, rr);
+      g.appendChild(el("ellipse", { cx, cy, rx: 10 + rand() * 14, ry: 7 + rand() * 10, fill: rand() > 0.5 ? "#fff" : "#000", opacity: (.05 + rand() * .05).toFixed(2), transform: `rotate(${(rand() * 360).toFixed(1)} ${cx} ${cy})` }));
     }
 
-    const labels = [{ key: "base", name: BASE_NAMES[pz.base] }, ...pz.tops.map((key) => ({ key, name: TOPPING_NAMES[key] || key }))];
-    const n = labels.length;
-    // more toppings on the pizza → fewer repeats of each, but the pie always ends up fully loaded
-    const EXTRA = pz.tops[0] === "question" ? 0 : Math.max(5, Math.round(22 / Math.max(1, pz.tops.length)));
+    // the sauce label points here — keep toppings off it so the arrow lands on visible base
+    const baseAnchor = pt(-Math.PI / 2 + (rand() - 0.5) * 0.5, (RS - CR) * 0.5);
 
-    labels.forEach((item, i) => {
-      const angle = -Math.PI / 2 + (i * Math.PI * 2) / n;
-      const anchorR = item.key === "base" ? R2 * 0.82 : R2 * 0.55;
-      const ax = CX2 + anchorR * Math.cos(angle), ay = CY2 + anchorR * Math.sin(angle);
-
-      if (item.key !== "base") {
-        const painter = TOPPINGS[item.key];
-        const extra = item.key === "question" ? [] : Array.from({ length: EXTRA }, () => {
-          const a2 = rand() * Math.PI * 2, r2 = Math.sqrt(rand()) * (R2 - CRUST2) * 0.92;
-          return [CX2 + r2 * Math.cos(a2), CY2 + r2 * Math.sin(a2)];
-        });
-        if (painter) painter(g, [[ax, ay], ...extra]);
+    // random point on the slice, away from tip, crust and the base anchor
+    const inside = () => {
+      for (let tries = 0; tries < 8; tries++) {
+        const a = A0 + 0.1 + rand() * (A1 - A0 - 0.2);
+        const r = Math.max(85, Math.sqrt(rand()) * (RS - CR - 34));
+        const p = pt(a, r);
+        if (Math.hypot(p[0] - baseAnchor[0], p[1] - baseAnchor[1]) > 42) return p;
       }
+      return pt(A0 + 0.15, RS - CR - 60);
+    };
 
-      const lx = CX2 + LR * Math.cos(angle), ly = CY2 + LR * Math.sin(angle);
-      g.appendChild(el("circle", { cx: ax, cy: ay, r: 15, fill: "none", stroke: "#362718", "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: .8 }));
-      g.appendChild(el("line", { x1: lx, y1: ly, x2: ax, y2: ay, stroke: "#362718", "stroke-width": 1.6, "stroke-dasharray": "2 4", "marker-end": "url(#ing-arrow)", opacity: .85 }));
+    const labels = [{ key: "base", name: BASE_NAMES[pz.base] }, ...pz.tops.map((key) => ({ key, name: TOPPING_NAMES[key] || key }))];
+    // more toppings on the pizza → fewer repeats of each, but the slice always ends up fully loaded
+    const EXTRA = pz.tops[0] === "question" ? 0 : Math.max(4, Math.round(18 / Math.max(1, pz.tops.length)));
 
-      const cosA = Math.cos(angle), sinA = Math.sin(angle);
-      const anchorSide = cosA > 0.12 ? "start" : cosA < -0.12 ? "end" : "middle";
-      const dy = sinA < -0.5 ? -6 : sinA > 0.5 ? 16 : 6;
-      const t = el("text", { x: lx, y: ly + dy, "text-anchor": anchorSide, "font-family": "var(--font-hand), cursive", "font-size": 24, fill: "#362718", "font-weight": 600 });
-      t.textContent = item.name;
-      g.appendChild(t);
+    // painters were sized for the small wheel; a scaled group makes them chunky and slice-realistic
+    const S = 1.7, MY = AY - (RS - CR) * 0.62;
+    const tg = el("g", { transform: `translate(${AX} ${MY}) scale(${S}) translate(${-AX} ${-MY})` });
+    g.appendChild(tg);
+    const virt = ([x, y]) => [AX + (x - AX) / S, MY + (y - MY) / S];
+
+    // paint toppings, remembering one anchor point per ingredient for its pointer
+    labels.forEach((item) => {
+      if (item.key === "base") { item.anchor = baseAnchor; return; }
+      const pts = item.key === "question" ? [pt(-Math.PI / 2, (RS - CR) * 0.6)] : [inside(), ...Array.from({ length: EXTRA }, inside)];
+      item.anchor = pts[0];
+      const painter = TOPPINGS[item.key];
+      if (painter) painter(tg, pts.map(virt));
+    });
+
+    // labels in two side columns, each with a dashed arrow onto the slice
+    const left = labels.filter((l) => l.anchor[0] < AX).sort((a, b) => a.anchor[1] - b.anchor[1]);
+    const right = labels.filter((l) => l.anchor[0] >= AX).sort((a, b) => a.anchor[1] - b.anchor[1]);
+    [[left, 10, "start"], [right, 630, "end"]].forEach(([col, tx, side]) => {
+      col.forEach((item, i) => {
+        const y = 70 + (i + 0.5) * (360 / Math.max(1, col.length));
+        const [ax, ay] = item.anchor;
+        const t = el("text", { x: tx, y: y + 8, "text-anchor": side, "font-family": "var(--font-hand), cursive", "font-size": 24, fill: "#362718", "font-weight": 600 });
+        t.textContent = item.name;
+        g.appendChild(t);
+        // start the pointer just past the text so they never overlap
+        const box = t.getBBox();
+        const lx = side === "start" ? box.x + box.width + 8 : box.x - 8;
+        g.appendChild(el("circle", { cx: ax, cy: ay, r: 19, fill: "none", stroke: "#362718", "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: .8 }));
+        g.appendChild(el("line", { x1: lx, y1: y, x2: ax, y2: ay, stroke: "#362718", "stroke-width": 1.6, "stroke-dasharray": "2 4", "marker-end": "url(#ing-arrow)", opacity: .85 }));
+      });
     });
   }
 
