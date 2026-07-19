@@ -443,6 +443,10 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   .nav-links.is-open { transform: none; }
   .wheel-wrap { width: min(420px, 92vw); }
   .wheel-card { padding: 22px; }
+  /* keep the floating order button off the page content */
+  .footer { padding-bottom: 110px; }
+  .order-fab { right: 14px; bottom: 14px; }
+  .order-fab-toggle { padding: 11px 18px; font-size: .92rem; }
 }
 
 /* ══════════════════ REDUCED MOTION ══════════════════ */
@@ -475,7 +479,10 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .order-fab {
   position: fixed; right: 18px; bottom: 18px; z-index: 90;
   display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  /* the container spans the hidden actions' area — don't let it eat taps */
+  pointer-events: none;
 }
+.order-fab-toggle, .order-fab.is-open .order-fab-action { pointer-events: auto; }
 .order-fab-toggle {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 13px 22px; border: none; border-radius: 999px; cursor: pointer;
