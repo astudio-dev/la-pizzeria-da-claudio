@@ -74,6 +74,13 @@ const MENU = {
   ],
 };
 
+/* ─────────────── DIET BADGES ─────────────── */
+function dietBadge(word) {
+  if (/^vegan$/i.test(word)) return '<span class="diet-badge diet-vegan">🌱 Vegan</span>';
+  if (/^vegetarian$/i.test(word)) return '<span class="diet-badge diet-veg">🥬 Vegetarian</span>';
+  return null;
+}
+
 /* ─────────────── LOADER ─────────────── */
 window.addEventListener("load", () => {
   setTimeout(() => document.getElementById("loader").classList.add("is-done"), 500);
@@ -247,7 +254,7 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
 
   function setCard(pz) {
     cardName.textContent = pz.name;
-    cardTags.textContent = pz.tags;
+    cardTags.innerHTML = pz.tags.split(" · ").map((t) => dietBadge(t) || `<span>${t}</span>`).join(" · ");
     cardHint.style.display = "none";
     renderDiagram(pz);
   }
@@ -376,6 +383,16 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
         painter(g, pts);
       });
 
+      // V / VG marker on the crust so diet-friendly slices read at a glance
+      const diet = /vegan/i.test(pz.tags) ? "VG" : /vegetarian/i.test(pz.tags) ? "V" : null;
+      if (diet) {
+        const [bx, by] = polar(mid, R - CRUST / 2);
+        g.appendChild(el("circle", { cx: bx, cy: by, r: 13, fill: diet === "VG" ? "#2e7d32" : "#6a9a3c", stroke: "#f8f1e0", "stroke-width": 2.5, filter: SHADOW }));
+        const t = el("text", { x: bx, y: by + 4.5, "text-anchor": "middle", "font-size": diet === "VG" ? 11 : 13, "font-weight": 700, fill: "#fff", "font-family": "Work Sans, sans-serif" });
+        t.textContent = diet;
+        g.appendChild(t);
+      }
+
       // hover lift along bisector
       const lift = 13;
       const dx = Math.cos(mid) * lift, dy = Math.sin(mid) * lift;
@@ -422,7 +439,8 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
       const div = document.createElement("div");
       div.className = "menu-item";
       div.style.setProperty("--i", i);
-      div.innerHTML = `<h3>${item.n}</h3><p>${item.d}</p>${item.b ? `<span class="menu-badge">${item.b}</span>` : ""}`;
+      const badge = item.b ? dietBadge(item.b) || `<span class="menu-badge">${item.b}</span>` : "";
+      div.innerHTML = `<h3>${item.n}</h3><p>${item.d}</p>${badge}`;
       grid.appendChild(div);
     });
   }
@@ -435,6 +453,19 @@ document.querySelectorAll(".stat-num").forEach((el) => statIO.observe(el));
   }));
 
   show("starters");
+})();
+
+/* ─────────────── ORDER FAB ─────────────── */
+(function orderFab() {
+  const fab = document.getElementById("orderFab");
+  const toggle = document.getElementById("orderFabToggle");
+  toggle.addEventListener("click", () => {
+    const open = fab.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", open);
+  });
+  document.addEventListener("click", (e) => {
+    if (!fab.contains(e.target)) { fab.classList.remove("is-open"); toggle.setAttribute("aria-expanded", "false"); }
+  });
 })();
 
 /* ─────────────── FOOTER YEAR ─────────────── */

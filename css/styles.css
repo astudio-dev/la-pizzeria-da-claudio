@@ -311,7 +311,6 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .wheel-card p { color: var(--ink-soft); }
 .wheel-card-tags { margin-top: 10px; font-family: var(--font-hand); font-size: 1.2rem; color: var(--basil); }
 .card-diagram { display: block; width: 100%; max-width: 560px; height: auto; margin: 10px auto 0; overflow: visible; }
-.wheel-hint { margin-top: 26px; font-family: var(--font-hand); font-size: 1.25rem; color: var(--ink-soft); transform: rotate(-.8deg); }
 
 /* ══════════════════ MENU ══════════════════ */
 .menu-section { background: var(--paper-2); }
@@ -452,3 +451,57 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   html { scroll-behavior: auto; }
   .reveal, .reveal-up { opacity: 1; transform: none; }
 }
+
+/* ══════════════════ DIET BADGES ══════════════════ */
+.diet-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 13px; border-radius: 999px;
+  font-family: var(--font-body); font-size: .82rem; font-weight: 600; letter-spacing: .02em;
+  border: 1.5px solid transparent; white-space: nowrap;
+}
+.diet-veg   { color: #fff; background: #6a9a3c; }
+.diet-vegan { color: #fff; background: #2e7d32; }
+.diet-gf    { color: #7a5b1e; background: rgba(217, 164, 65, .28); border-color: var(--mustard); }
+.diet-legend {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;
+  margin-top: 28px;
+}
+.diet-legend-note { flex-basis: 100%; font-family: var(--font-hand); font-size: 1.2rem; color: var(--ink-soft); transform: rotate(-.8deg); }
+.menu-section .diet-legend { margin: 26px 0 6px; }
+.wheel-card-tags .diet-badge { font-size: .78rem; vertical-align: 2px; }
+.menu-item .diet-badge { margin-top: 12px; }
+
+/* ══════════════════ ORDER FAB ══════════════════ */
+.order-fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 90;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+}
+.order-fab-toggle {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 22px; border: none; border-radius: 999px; cursor: pointer;
+  background: var(--tomato); color: #fff;
+  font-family: var(--font-body); font-size: 1rem; font-weight: 700; letter-spacing: .02em;
+  box-shadow: 0 6px 18px rgba(54, 39, 24, .35);
+  transition: transform .25s var(--ease-out), background .25s;
+}
+.order-fab-toggle:hover { background: var(--tomato-deep); transform: translateY(-2px); }
+.order-fab-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.order-fab-action {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 18px; border-radius: 999px;
+  color: #fff; text-decoration: none;
+  font-family: var(--font-body); font-size: .95rem; font-weight: 600;
+  box-shadow: 0 4px 14px rgba(54, 39, 24, .3);
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .25s var(--ease-out), transform .25s var(--ease-out), visibility .25s;
+}
+.order-fab.is-open .order-fab-action { opacity: 1; visibility: visible; transform: none; }
+.order-fab.is-open .order-fab-action:nth-child(4) { transition-delay: 0s; }
+.order-fab.is-open .order-fab-action:nth-child(3) { transition-delay: .05s; }
+.order-fab.is-open .order-fab-action:nth-child(2) { transition-delay: .1s; }
+.order-fab.is-open .order-fab-action:nth-child(1) { transition-delay: .15s; }
+.order-fab-action:hover { filter: brightness(1.1); }
+.order-fab-phone     { background: var(--tomato); }
+.order-fab-messenger { background: #0084ff; }
+.order-fab-whatsapp  { background: #25d366; }
+.order-fab-telegram  { background: #229ed9; }
